@@ -16,7 +16,6 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -107,6 +106,12 @@ public class TPMCommands {
                         .then(Commands.argument("name", StringArgumentType.word()).executes(context -> sethome(
                                 context.getSource().getEntityOrException(),
                                 StringArgumentType.getString(context, "name"))))
+                ));
+
+        dispatcher.register(Commands.literal("delhome").requires(stack -> stack.hasPermission(TPMServerConfig.HOME_PERMISSION_LEVEL.get()))
+                .then(Commands.argument("name", StringArgumentType.word())
+                        .suggests(HOME_SUGGESTIONS)
+                        .executes(context -> removeHome(context.getSource().getEntityOrException(), StringArgumentType.getString(context, "name")))
                 ));
 
         dispatcher.register(Commands.literal("back").requires(stack -> stack.hasPermission(TPMServerConfig.BACK_PERMISSION_LEVEL.get()))
