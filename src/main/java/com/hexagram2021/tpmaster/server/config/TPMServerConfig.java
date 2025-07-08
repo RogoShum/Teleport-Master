@@ -2,34 +2,34 @@ package com.hexagram2021.tpmaster.server.config;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.world.level.biome.Biomes;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TPMServerConfig {
-    public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
-    public static final ModConfigSpec SPEC;
+    public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    public static final ForgeConfigSpec SPEC;
 
-    public static final ModConfigSpec.ConfigValue<Integer> ACCEPT_DENY_PERMISSION_LEVEL;
-    public static final ModConfigSpec.ConfigValue<Integer> AWAY_PERMISSION_LEVEL;
-    public static final ModConfigSpec.ConfigValue<Integer> REQUEST_PERMISSION_LEVEL;
-    public static final ModConfigSpec.ConfigValue<Integer> SPAWN_PERMISSION_LEVEL;
-    public static final ModConfigSpec.ConfigValue<Integer> HOME_PERMISSION_LEVEL;
-    public static final ModConfigSpec.ConfigValue<Integer> BACK_PERMISSION_LEVEL;
-    public static final ModConfigSpec.ConfigValue<Integer> REMOVE_PERMISSION_LEVEL;
-    public static final ModConfigSpec.ConfigValue<Integer> HELP_PERMISSION_LEVEL;
+    public static final ForgeConfigSpec.ConfigValue<Integer> ACCEPT_DENY_PERMISSION_LEVEL;
+    public static final ForgeConfigSpec.ConfigValue<Integer> AWAY_PERMISSION_LEVEL;
+    public static final ForgeConfigSpec.ConfigValue<Integer> REQUEST_PERMISSION_LEVEL;
+    public static final ForgeConfigSpec.ConfigValue<Integer> SPAWN_PERMISSION_LEVEL;
+    public static final ForgeConfigSpec.ConfigValue<Integer> HOME_PERMISSION_LEVEL;
+    public static final ForgeConfigSpec.ConfigValue<Integer> BACK_PERMISSION_LEVEL;
+    public static final ForgeConfigSpec.ConfigValue<Integer> REMOVE_PERMISSION_LEVEL;
+    public static final ForgeConfigSpec.ConfigValue<Integer> HELP_PERMISSION_LEVEL;
 
-    public static final ModConfigSpec.ConfigValue<Integer> AWAY_COMMAND_COOL_DOWN_TICK;
-    public static final ModConfigSpec.ConfigValue<Integer> REQUEST_COMMAND_COOL_DOWN_TICK;
-    public static final ModConfigSpec.ConfigValue<Integer> REQUEST_COMMAND_AUTO_DENY_TICK;
+    public static final ForgeConfigSpec.ConfigValue<Integer> AWAY_COMMAND_COOL_DOWN_TICK;
+    public static final ForgeConfigSpec.ConfigValue<Integer> REQUEST_COMMAND_COOL_DOWN_TICK;
+    public static final ForgeConfigSpec.ConfigValue<Integer> REQUEST_COMMAND_AUTO_DENY_TICK;
 
-    public static final ModConfigSpec.ConfigValue<Integer> AWAY_TRY_COUNT;
-    public static final ModConfigSpec.ConfigValue<Double> AWAY_NOISE_BOUND;
+    public static final ForgeConfigSpec.ConfigValue<Integer> AWAY_TRY_COUNT;
+    public static final ForgeConfigSpec.ConfigValue<Double> AWAY_NOISE_BOUND;
 
-    public static final ModConfigSpec.ConfigValue<Integer> MAX_HOME_COUNT;
+    public static final ForgeConfigSpec.ConfigValue<Integer> MAX_HOME_COUNT;
 
-    public static final ModConfigSpec.ConfigValue<List<String>> OCEAN_BIOME_KEYS;
+    public static final ForgeConfigSpec.ConfigValue<List<String>> OCEAN_BIOME_KEYS;
 
     static {
         BUILDER.push("tpmaster-common-config");

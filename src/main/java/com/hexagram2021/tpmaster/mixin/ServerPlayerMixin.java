@@ -80,7 +80,7 @@ public class ServerPlayerMixin implements ITeleportable {
             if (uuid.equals(Util.NIL_UUID)) {
                 this.teleportMasterRequester = null;
             } else {
-                this.teleportMasterRequester = ((ServerPlayer) (Object) this).level().getPlayerByUUID(uuid);
+                this.teleportMasterRequester = ((ServerPlayer) (Object) this).getLevel().getPlayerByUUID(uuid);
             }
         }
         if (nbt.contains("RequestType", Tag.TAG_BYTE)) {
@@ -179,8 +179,8 @@ public class ServerPlayerMixin implements ITeleportable {
     public void recordDeathPoint(DamageSource damageSource, CallbackInfo ci) {
         ServerPlayer current = (ServerPlayer) (Object) this;
         BlockPos pos = current.blockPosition();
-        setTeleportMasterLastLocation(GlobalPos.of(current.level().dimension(), pos), true);
-        current.sendSystemMessage(TextFormatter.format("您在 {} 的 {} 位置坐标死亡", current.level().dimension().location(), pos)
+        setTeleportMasterLastLocation(GlobalPos.of(current.getLevel().dimension(), pos), true);
+        current.sendSystemMessage(TextFormatter.format("您在 {} 的 {} 位置坐标死亡", current.getLevel().dimension().location(), pos)
                 .withStyle(Style.EMPTY
                         .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/back dead"))
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("点击传送").withStyle(ChatFormatting.GREEN)))));
