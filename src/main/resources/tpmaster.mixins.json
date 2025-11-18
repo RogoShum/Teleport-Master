@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "tpmaster.refmap.json",
   "mixins": [
-    "ServerPlayerMixin"
+    "ServerPlayerMixin",
+    "TeleportCommandInvoker"
   ],
   "minVersion": "0.8",
   "client": [

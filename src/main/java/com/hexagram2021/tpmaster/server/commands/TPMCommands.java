@@ -1,5 +1,6 @@
 package com.hexagram2021.tpmaster.server.commands;
 
+import com.hexagram2021.tpmaster.mixin.TeleportCommandInvoker;
 import com.hexagram2021.tpmaster.server.TextFormatter;
 import com.hexagram2021.tpmaster.server.config.TPMServerConfig;
 import com.hexagram2021.tpmaster.server.util.ITeleportable;
@@ -30,11 +31,9 @@ import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Method;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
@@ -564,21 +563,6 @@ public class TPMCommands {
     };
 
     public static void performTeleport(CommandSourceStack source, Entity entity, ServerLevel level, double x, double y, double z, Set<RelativeMovement> relativeList, float yaw, float pitch, @Nullable TeleportCommand.LookAt facing) {
-        Method method = ObfuscationReflectionHelper.findMethod(TeleportCommand.class, "performTeleport", CommandSourceStack.class,
-                Entity.class,
-                ServerLevel.class,
-                double.class,
-                double.class,
-                double.class,
-                Set.class,
-                float.class,
-                float.class,
-                TeleportCommand.LookAt.class);
-
-        try {
-            method.invoke(null, source, entity, level, x, y, z, relativeList, yaw, pitch, facing);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to perform teleport", e);
-        }
+        TeleportCommandInvoker.callPerformTeleport(source, entity, level, x, y, z, relativeList, yaw, pitch, facing);
     }
 }
