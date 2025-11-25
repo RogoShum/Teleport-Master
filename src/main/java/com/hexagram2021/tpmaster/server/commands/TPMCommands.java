@@ -452,7 +452,7 @@ public class TPMCommands {
             // 如果名称为空，使用默认名称
             if (name == null || name.isEmpty()) {
                 name = String.format("%s_%d_%d_%d",
-                        entity.level().dimension().location().toString(),
+                        entity.level().dimension().location().toString().replace(":", "-"),
                         pos.getX(), pos.getY(), pos.getZ());
             }
 

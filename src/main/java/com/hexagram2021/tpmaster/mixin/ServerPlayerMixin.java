@@ -17,6 +17,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -105,7 +106,7 @@ public class ServerPlayerMixin implements ITeleportable {
                         .filter(key -> key.location().toString().equals(dimension))
                         .findFirst()
                         .ifPresentOrElse(
-                                key -> this.teleportMasterHomes.put(name,
+                                key -> this.teleportMasterHomes.put(name.replace(":", "-"),
                                         GlobalPos.of(key, BlockPos.of(homeTag.getLong("pos")))),
                                 () -> TeleportMaster.LOGGER.error(
                                         "没有叫做 \"{}\" 的维度", dimension)
@@ -273,6 +274,7 @@ public class ServerPlayerMixin implements ITeleportable {
                     Component.literal("家的名称不能为空")
             ).create();
         }
+
         if (this.teleportMasterHomes.size() >= MAX_HOME_COUNT.get() && !this.teleportMasterHomes.containsKey(name)) {
             throw new SimpleCommandExceptionType(
                     Component.literal("您已达到最大家的数量限制")
