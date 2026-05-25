@@ -105,7 +105,7 @@ public class ServerPlayerMixin implements ITeleportable {
                         .filter(key -> key.location().toString().equals(dimension))
                         .findFirst()
                         .ifPresentOrElse(
-                                key -> this.teleportMasterHomes.put(name,
+                                key -> this.teleportMasterHomes.put(name.replace(":", "-"),
                                         GlobalPos.of(key, BlockPos.of(homeTag.getLong("pos")))),
                                 () -> TeleportMaster.LOGGER.error(
                                         "没有叫做 \"{}\" 的维度", dimension)
