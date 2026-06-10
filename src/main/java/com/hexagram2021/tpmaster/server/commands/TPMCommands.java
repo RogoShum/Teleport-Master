@@ -21,13 +21,13 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.*;
+import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.commands.TeleportCommand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.NeutralMob;
-import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.biome.Biome;
@@ -186,7 +186,7 @@ public class TPMCommands {
             teleportable.setTeleportMasterAway();
         }
         if (distance == 0) {
-            distance = entity.level().getRandom().nextInt(600) + 600;
+            distance = entity.level.getRandom().nextInt(600) + 600;
         } else if (distance < 0 || distance > 10000) {
             throw INVALID_AWAY_DISTANCE_PARAMETER.create(distance);
         }
@@ -194,13 +194,13 @@ public class TPMCommands {
         if (entity instanceof ITeleportable teleportable) {
             // 保存当前位置
             teleportable.setTeleportMasterLastLocation(
-                    GlobalPos.of(entity.level().dimension(), entity.blockPosition()),
+                    GlobalPos.of(entity.level.dimension(), entity.blockPosition()),
                     false
             );
         }
 
         boolean flag = false;
-        RandomSource random = entity.level().getRandom();
+        RandomSource random = entity.level.getRandom();
         double x = entity.getX();
         double y = entity.getY();
         double z = entity.getZ();
@@ -209,7 +209,7 @@ public class TPMCommands {
             x = entity.getX() + distance * Math.cos(phi) + random.nextDouble() * TPMServerConfig.AWAY_NOISE_BOUND.get() * distance;
             z = entity.getZ() + distance * Math.sin(phi) + random.nextDouble() * TPMServerConfig.AWAY_NOISE_BOUND.get() * distance;
             BlockPos blockPos = new BlockPos((int) x, (int) 255.0D, (int) z);
-            Biome biome = entity.level().getBiome(blockPos).value();
+            Biome biome = entity.level.getBiome(blockPos).value();
             boolean conti = false;
             if (mustOnLand) {
                 for (String ocean : TPMServerConfig.OCEAN_BIOME_KEYS.get()) {
@@ -222,7 +222,7 @@ public class TPMCommands {
             }
             if (!conti) {
                 flag = true;
-                y = LevelUtils.getTopBlock(entity.level(), blockPos);
+                y = LevelUtils.getTopBlock(entity.level, blockPos);
                 if (y < 8) {
                     continue;
                 }
@@ -232,8 +232,8 @@ public class TPMCommands {
         if (!flag) {
             throw CANNOT_FIND_POSITION.create();
         }
-        performTeleport(stack, entity, (ServerLevel) entity.level(), x, y, z,
-                EnumSet.noneOf(RelativeMovement.class), entity.getYRot(), entity.getXRot(), lookAt);
+        performTeleport(stack, entity, (ServerLevel) entity.level, x, y, z,
+                EnumSet.noneOf(ClientboundPlayerPositionPacket.RelativeArgument.class), entity.getYRot(), entity.getXRot(), lookAt);
 
         BlockPos finalPos = new BlockPos((int) x, (int) y, (int) z);
         entity.sendSystemMessage(TextFormatter.format(
@@ -346,27 +346,27 @@ public class TPMCommands {
                 // 保存传送前的位置
                 if (type == ITeleportable.RequestType.ASK && entity instanceof ITeleportable teleportable) {
                     teleportable.setTeleportMasterLastLocation(
-                            GlobalPos.of(entity.level().dimension(), entity.blockPosition()),
+                            GlobalPos.of(entity.level.dimension(), entity.blockPosition()),
                             false
                     );
                 } else if (type == ITeleportable.RequestType.INVITE && target instanceof ITeleportable teleportable) {
                     teleportable.setTeleportMasterLastLocation(
-                            GlobalPos.of(target.level().dimension(), target.blockPosition()),
+                            GlobalPos.of(target.level.dimension(), target.blockPosition()),
                             false
                     );
                 }
 
                 switch (type) {
                     case ASK -> performTeleport(
-                            stack, entity, (ServerLevel) target.level(),
+                            stack, entity, (ServerLevel) target.level,
                             target.getX(), target.getY(), target.getZ(),
-                            EnumSet.noneOf(RelativeMovement.class),
+                            EnumSet.noneOf(ClientboundPlayerPositionPacket.RelativeArgument.class),
                             entity.getYRot(), entity.getXRot(), null
                     );
                     case INVITE -> performTeleport(
-                            stack, target, (ServerLevel) entity.level(),
+                            stack, target, (ServerLevel) entity.level,
                             entity.getX(), entity.getY(), entity.getZ(),
-                            EnumSet.noneOf(RelativeMovement.class),
+                            EnumSet.noneOf(ClientboundPlayerPositionPacket.RelativeArgument.class),
                             target.getYRot(), target.getXRot(), null
                     );
                 }
@@ -390,27 +390,27 @@ public class TPMCommands {
             // 保存传送前的位置
             if (requestType == ITeleportable.RequestType.ASK && requester instanceof ITeleportable requesterTeleportable) {
                 requesterTeleportable.setTeleportMasterLastLocation(
-                        GlobalPos.of(requester.level().dimension(), requester.blockPosition()),
+                        GlobalPos.of(requester.level.dimension(), requester.blockPosition()),
                         false
                 );
             } else if (requestType == ITeleportable.RequestType.INVITE) {
                 teleportable.setTeleportMasterLastLocation(
-                        GlobalPos.of(entity.level().dimension(), entity.blockPosition()),
+                        GlobalPos.of(entity.level.dimension(), entity.blockPosition()),
                         false
                 );
             }
 
             switch (requestType) {
                 case ASK -> performTeleport(
-                        stack, requester, (ServerLevel) entity.level(),
+                        stack, requester, (ServerLevel) entity.level,
                         entity.getX(), entity.getY(), entity.getZ(),
-                        EnumSet.noneOf(RelativeMovement.class),
+                        EnumSet.noneOf(ClientboundPlayerPositionPacket.RelativeArgument.class),
                         requester.getYRot(), requester.getXRot(), null
                 );
                 case INVITE -> performTeleport(
-                        stack, entity, (ServerLevel) requester.level(),
+                        stack, entity, (ServerLevel) requester.level,
                         requester.getX(), requester.getY(), requester.getZ(),
-                        EnumSet.noneOf(RelativeMovement.class),
+                        EnumSet.noneOf(ClientboundPlayerPositionPacket.RelativeArgument.class),
                         entity.getYRot(), entity.getXRot(), null
                 );
             }
@@ -426,7 +426,7 @@ public class TPMCommands {
         if (entity instanceof ITeleportable teleportable) {
             // 保存当前位置
             teleportable.setTeleportMasterLastLocation(
-                    GlobalPos.of(entity.level().dimension(), entity.blockPosition()),
+                    GlobalPos.of(entity.level.dimension(), entity.blockPosition()),
                     false
             );
         }
@@ -436,7 +436,7 @@ public class TPMCommands {
         performTeleport(
                 stack, entity, overworld,
                 spawnPoint.getX(), spawnPoint.getY() + 1.0D, spawnPoint.getZ(),
-                EnumSet.noneOf(RelativeMovement.class),
+                EnumSet.noneOf(ClientboundPlayerPositionPacket.RelativeArgument.class),
                 entity.getYRot(), entity.getXRot(), null
         );
 
@@ -447,12 +447,12 @@ public class TPMCommands {
     private static int sethome(Entity entity, @Nullable String name) throws CommandSyntaxException {
         if (entity instanceof ITeleportable teleportable) {
             BlockPos pos = entity.getOnPos();
-            GlobalPos globalPos = GlobalPos.of(entity.level().dimension(), pos);
+            GlobalPos globalPos = GlobalPos.of(entity.level.dimension(), pos);
 
             // 如果名称为空，使用默认名称
             if (name == null || name.isEmpty()) {
                 name = String.format("%s_%d_%d_%d",
-                        entity.level().dimension().location().toString().replace(":", "-"),
+                        entity.level.dimension().location().toString().replace(":", "-"),
                         pos.getX(), pos.getY(), pos.getZ());
             }
 
@@ -476,7 +476,7 @@ public class TPMCommands {
 
             // 保存当前位置作为上一个传送点
             teleportable.setTeleportMasterLastLocation(
-                    GlobalPos.of(entity.level().dimension(), entity.blockPosition()),
+                    GlobalPos.of(entity.level.dimension(), entity.blockPosition()),
                     false
             );
 
@@ -489,7 +489,7 @@ public class TPMCommands {
             performTeleport(
                     stack, entity, level,
                     pos.getX(), pos.getY() + 1.0D, pos.getZ(),
-                    EnumSet.noneOf(RelativeMovement.class),
+                    EnumSet.noneOf(ClientboundPlayerPositionPacket.RelativeArgument.class),
                     entity.getYRot(), entity.getXRot(), null
             );
 
@@ -510,7 +510,7 @@ public class TPMCommands {
             }
 
             // 保存当前位置作为新的上一个传送点
-            GlobalPos currentPos = GlobalPos.of(entity.level().dimension(), entity.blockPosition());
+            GlobalPos currentPos = GlobalPos.of(entity.level.dimension(), entity.blockPosition());
 
             ServerLevel level = stack.getServer().getLevel(lastPos.dimension());
             if (level == null) {
@@ -521,7 +521,7 @@ public class TPMCommands {
             performTeleport(
                     stack, entity, level,
                     pos.getX(), pos.getY() + 1.0D, pos.getZ(),
-                    EnumSet.noneOf(RelativeMovement.class),
+                    EnumSet.noneOf(ClientboundPlayerPositionPacket.RelativeArgument.class),
                     entity.getYRot(), entity.getXRot(), null
             );
 
@@ -562,7 +562,7 @@ public class TPMCommands {
         return builder.buildFuture();
     };
 
-    public static void performTeleport(CommandSourceStack source, Entity entity, ServerLevel level, double x, double y, double z, Set<RelativeMovement> relativeList, float yaw, float pitch, @Nullable TeleportCommand.LookAt facing) {
+    public static void performTeleport(CommandSourceStack source, Entity entity, ServerLevel level, double x, double y, double z, Set<ClientboundPlayerPositionPacket.RelativeArgument> relativeList, float yaw, float pitch, @Nullable TeleportCommand.LookAt facing) {
         TeleportCommandInvoker.callPerformTeleport(source, entity, level, x, y, z, relativeList, yaw, pitch, facing);
     }
 }
